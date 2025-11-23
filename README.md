@@ -1,1 +1,118 @@
 # Satisfactory-Dedicated-Server
+
+Satisfactory ゲーム用の Docker ベースの専用マルチプレイヤーサーバーです。Linux 環境で複数のプレイヤーが参加可能なゲームサーバーをホストできます。
+
+## 概要
+
+このプロジェクトは、Satisfactory の専用サーバーを Docker コンテナで実行するためのセットアップを提供します。
+
+**主な特徴:**
+- Docker ベースで環境に依存しない統一されたセットアップ
+- 環境変数によるサーバー設定のカスタマイズが可能
+- ボリュームマウントによるゲーム進捗データの永続化
+- マルチプレイヤー対応（最大プレイヤー数を設定可能）
+- 自動保存機能（保存間隔を設定可能）
+
+## 必要要件
+
+- Docker がインストールされていること
+- Docker を実行可能な環境（Linux 推奨）
+- 十分なディスク容量（サーバーインストール: 約 10GB、セーブデータ用: 別途必要）
+
+## ビルド方法
+
+リポジトリをクローンし、以下のコマンドで Docker イメージをビルドします：
+
+```bash
+git clone https://github.com/qoofee/Satisfactory-Dedicated-Server.git
+cd Satisfactory-Dedicated-Server
+docker build -t satisfactory-server .
+```
+
+ビルドには数分かかります。SteamCMD を使用して Satisfactory Dedicated Server をダウンロード・検証するため、インターネット接続が必要です。
+
+## 起動方法
+
+### 基本的な起動例
+
+```bash
+docker run -d \
+  --name satisfactory-server \
+  -p 7777:7777/udp \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v /path/to/savedata:/home/ubuntu/satisfactory/FactoryGame/Saved \
+  satisfactory-server
+```
+
+**コマンドの説明:**
+- `-d`: バックグラウンドで実行
+- `--name satisfactory-server`: コンテナ名を指定
+- `-p 7777:7777/udp`: ゲームサーバーポート (UDP)
+- `-p 27015:27015/udp`: クエリポート (UDP)
+- `-p 27016:27016/udp`: サーバークエリポート (UDP)
+- `-v /path/to/savedata:...`: セーブデータをホストに永続化
+
+### 環境変数を指定した起動例
+
+```bash
+docker run -d \
+  --name satisfactory-server \
+  -p 7777:7777/udp \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v /path/to/savedata:/home/ubuntu/satisfactory/FactoryGame/Saved \
+  -e SERVER_NAME="My Satisfactory Server" \
+  -e MAX_PLAYERS=8 \
+  -e GAME_SPEED=1.0 \
+  -e AUTO_SAVE_INTERVAL=300 \
+  satisfactory-server
+```
+
+## 環境変数
+
+以下の環境変数でサーバーの動作をカスタマイズできます：
+
+| 環境変数 | デフォルト値 | 説明 |
+|---------|----------|------|
+| `SERVER_NAME` | "Satisfactory Server" | サーバーの名前 |
+| `SERVER_PORT` | 7777 | サーバーが使用するポート番号 |
+| `MAX_PLAYERS` | 4 | 最大プレイヤー数 |
+| `GAME_SPEED` | 1.0 | ゲーム速度（1.0 が標準速度） |
+| `AUTO_SAVE_INTERVAL` | 300 | 自動保存の間隔（秒） |
+| `DIFFICULTY` | 0 | 難易度（0=Easy, 1=Normal, 2=Hard） |
+
+## ポート・ボリューム設定
+
+### 公開ポート
+
+| ポート | プロトコル | 用途 |
+|--------|-----------|------|
+| 7777 | UDP | ゲームサーバー |
+| 27015 | UDP | クエリポート |
+| 27016 | UDP | サーバークエリポート |
+
+### ボリュームマウント
+
+セーブデータは以下のパスに保存されます：
+
+```
+コンテナ内: /home/ubuntu/satisfactory/FactoryGame/Saved
+ホスト側: /path/to/savedata (任意のパス)
+```
+
+ホスト側のパスは、セーブデータを永続化したい任意のディレクトリに置き換えてください。
+
+## トラブルシューティング
+
+### サーバーが起動しない場合
+- ボリュームマウント先のディレクトリが存在・アクセス可能か確認してください
+- `docker logs satisfactory-server` でコンテナログを確認してください
+
+### ポートに接続できない場合
+- ファイアウォール設定でポート (7777, 27015, 27016 UDP) が開いているか確認してください
+- ホストマシンからポートが正しく公開されているか確認してください
+
+---
+
+**ライセンス:** Satisfactory は Coffee Stain Studios の商標です。
