@@ -37,7 +37,6 @@ docker build -t satisfactory-server .
 
 ```bash
 docker run -d \
-  --name satisfactory-server \
   -p 7777:7777/udp \
   -p 7777:7777/tcp \
   -p 8888:8888/tcp \
@@ -47,7 +46,6 @@ docker run -d \
 
 **コマンドの説明:**
 - `-d`: バックグラウンドで実行
-- `--name satisfactory-server`: コンテナ名を指定
 - `-p 7777:7777/udp`: ゲームサーバーポート / Beaconポート (UDP)
 - `-p 7777:7777/tcp`: クエリポート (TCP)
 - `-p 8888:8888/tcp`: 追加ポート (TCP)
@@ -55,17 +53,15 @@ docker run -d \
 
 ### 環境変数を指定した起動例
 
+#### SERVER_PORT を 5050 に指定する例
+
 ```bash
 docker run -d \
-  --name satisfactory-server \
-  -p 7777:7777/udp \
-  -p 7777:7777/tcp \
+  -e SERVER_PORT=5050 \
+  -p 5050:5050/udp \
+  -p 5050:5050/tcp \
   -p 8888:8888/tcp \
   -v /path/to/savedata:/home/ubuntu/satisfactory/FactoryGame/Saved \
-  -e SERVER_NAME="My Satisfactory Server" \
-  -e MAX_PLAYERS=8 \
-  -e GAME_SPEED=1.0 \
-  -e AUTO_SAVE_INTERVAL=300 \
   satisfactory-server
 ```
 
@@ -75,14 +71,9 @@ docker run -d \
 
 | 環境変数 | デフォルト値 | 説明 |
 |---------|----------|------|
-| `SERVER_NAME` | "Satisfactory Server" | サーバーの名前 |
 | `SERVER_PORT` | 7777 | サーバーが使用するポート番号 |
 | `RELIABLE_PORT` | 8888 | Reliableポート番号 |
 | `EXTERNAL_RELIABLE_PORT` | 8888 | External Reliableポート番号 |
-| `MAX_PLAYERS` | 4 | 最大プレイヤー数 |
-| `GAME_SPEED` | 1.0 | ゲーム速度（1.0 が標準速度） |
-| `AUTO_SAVE_INTERVAL` | 300 | 自動保存の間隔（秒） |
-| `DIFFICULTY` | 0 | 難易度（0=Easy, 1=Normal, 2=Hard） |
 
 ## ポート・ボリューム設定
 
