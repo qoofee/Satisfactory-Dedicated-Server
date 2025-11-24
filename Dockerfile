@@ -29,7 +29,7 @@ USER ubuntu
 VOLUME ["/home/ubuntu/satisfactory/FactoryGame/Saved"]
 
 # ポート公開
-EXPOSE 7777/udp 27015/udp 27016/udp
+EXPOSE 7777/tcp 8888/tcp 7777/udp
 
 WORKDIR /home/ubuntu/satisfactory
 
