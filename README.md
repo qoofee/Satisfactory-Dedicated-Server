@@ -39,8 +39,8 @@ docker build -t satisfactory-server .
 docker run -d \
   --name satisfactory-server \
   -p 7777:7777/udp \
-  -p 27015:27015/udp \
-  -p 27016:27016/udp \
+  -p 7777:7777/tcp \
+  -p 8888:8888/tcp \
   -v /path/to/savedata:/home/ubuntu/satisfactory/FactoryGame/Saved \
   satisfactory-server
 ```
@@ -48,9 +48,9 @@ docker run -d \
 **コマンドの説明:**
 - `-d`: バックグラウンドで実行
 - `--name satisfactory-server`: コンテナ名を指定
-- `-p 7777:7777/udp`: ゲームサーバーポート (UDP)
-- `-p 27015:27015/udp`: クエリポート (UDP)
-- `-p 27016:27016/udp`: サーバークエリポート (UDP)
+- `-p 7777:7777/udp`: ゲームサーバーポート / Beaconポート (UDP)
+- `-p 7777:7777/tcp`: クエリポート (TCP)
+- `-p 8888:8888/tcp`: 追加ポート (TCP)
 - `-v /path/to/savedata:...`: セーブデータをホストに永続化
 
 ### 環境変数を指定した起動例
@@ -59,8 +59,8 @@ docker run -d \
 docker run -d \
   --name satisfactory-server \
   -p 7777:7777/udp \
-  -p 27015:27015/udp \
-  -p 27016:27016/udp \
+  -p 7777:7777/tcp \
+  -p 8888:8888/tcp \
   -v /path/to/savedata:/home/ubuntu/satisfactory/FactoryGame/Saved \
   -e SERVER_NAME="My Satisfactory Server" \
   -e MAX_PLAYERS=8 \
@@ -77,6 +77,8 @@ docker run -d \
 |---------|----------|------|
 | `SERVER_NAME` | "Satisfactory Server" | サーバーの名前 |
 | `SERVER_PORT` | 7777 | サーバーが使用するポート番号 |
+| `RELIABLE_PORT` | 8888 | Reliableポート番号 |
+| `EXTERNAL_RELIABLE_PORT` | 8888 | External Reliableポート番号 |
 | `MAX_PLAYERS` | 4 | 最大プレイヤー数 |
 | `GAME_SPEED` | 1.0 | ゲーム速度（1.0 が標準速度） |
 | `AUTO_SAVE_INTERVAL` | 300 | 自動保存の間隔（秒） |
@@ -88,9 +90,9 @@ docker run -d \
 
 | ポート | プロトコル | 用途 |
 |--------|-----------|------|
-| 7777 | UDP | ゲームサーバー |
-| 27015 | UDP | クエリポート |
-| 27016 | UDP | サーバークエリポート |
+| 7777 | UDP | ゲームサーバー / Beaconポート |
+| 7777 | TCP | クエリポート |
+| 8888 | TCP | 追加ポート |
 
 ### ボリュームマウント
 
@@ -110,7 +112,8 @@ docker run -d \
 - `docker logs satisfactory-server` でコンテナログを確認してください
 
 ### ポートに接続できない場合
-- ファイアウォール設定でポート (7777, 27015, 27016 UDP) が開いているか確認してください
+
+- ファイアウォール設定でポート (7777 UDP/TCP, 8888 TCP) が開いているか確認してください
 - ホストマシンからポートが正しく公開されているか確認してください
 
 ---
